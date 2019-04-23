@@ -5,7 +5,7 @@
 ## Default variables to use
 export INTERACTIVE=${INTERACTIVE:="true"}
 export PVS=${INTERACTIVE:="true"}
-export DOMAIN=${DOMAIN:="$(curl -s ipinfo.io/ip).nip.io"}
+export DOMAIN=${DOMAIN:="$hostname -i"}
 export USERNAME=${USERNAME:="$(whoami)"}
 export PASSWORD=${PASSWORD:=password}
 export VERSION=${VERSION:="3.11"}
@@ -116,7 +116,7 @@ yum -y --enablerepo=epel install ansible.rpm
 cat <<EOD > /etc/hosts
 127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4 
 ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
-${IP}		$(hostname) console console.${DOMAIN}  
+${IP}		$(hostname) console ${DOMAIN}  
 EOD
 
 if [ -z $DISK ]; then 
@@ -201,9 +201,9 @@ if [ "$LETSENCRYPT" = true ] ; then
 	openshift_master_overwrite_named_certificates=true
 	
 	openshift_master_cluster_hostname=console-internal.${DOMAIN}
-	openshift_master_cluster_public_hostname=console.${DOMAIN}
+	openshift_master_cluster_public_hostname=${DOMAIN}
 	
-	openshift_master_named_certificates=[{"certfile": "/etc/letsencrypt/live/${DOMAIN}/fullchain.pem", "keyfile": "/etc/letsencrypt/live/${DOMAIN}/privkey.pem", "cafile": "/etc/letsencrypt/live/${DOMAIN}/chain.pem", "names": ["console.${DOMAIN}"]}]
+	openshift_master_named_certificates=[{"certfile": "/etc/letsencrypt/live/${DOMAIN}/fullchain.pem", "keyfile": "/etc/letsencrypt/live/${DOMAIN}/privkey.pem", "cafile": "/etc/letsencrypt/live/${DOMAIN}/chain.pem", "names": ["${DOMAIN}"]}]
 	
 	openshift_hosted_router_certificate={"certfile": "/etc/letsencrypt/live/${DOMAIN}/fullchain.pem", "keyfile": "/etc/letsencrypt/live/${DOMAIN}/privkey.pem", "cafile": "/etc/letsencrypt/live/${DOMAIN}/chain.pem"}
 	
@@ -247,13 +247,13 @@ if [ "$PVS" = "true" ]; then
 fi
 
 echo "******"
-echo "* Your console is https://console.$DOMAIN:$API_PORT"
+echo "* Your console is https://$DOMAIN:$API_PORT/console"
 echo "* Your username is $USERNAME "
 echo "* Your password is $PASSWORD "
 echo "*"
 echo "* Login using:"
 echo "*"
-echo "$ oc login -u ${USERNAME} -p ${PASSWORD} https://console.$DOMAIN:$API_PORT/"
+echo "$ oc login -u ${USERNAME} -p ${PASSWORD} https://$DOMAIN:$API_PORT/console"
 echo "******"
 
-oc login -u ${USERNAME} -p ${PASSWORD} https://console.$DOMAIN:$API_PORT/
+oc login -u ${USERNAME} -p ${PASSWORD} https://console.$DOMAIN:$API_PORT/console
