@@ -5,7 +5,7 @@
 ## Default variables to use
 export INTERACTIVE=${INTERACTIVE:="true"}
 export PVS=${INTERACTIVE:="true"}
-export DOMAIN=${DOMAIN:="$hostname -i"}
+export DOMAIN=${DOMAIN:="$(hostname -i)"}
 export USERNAME=${USERNAME:="$(whoami)"}
 export PASSWORD=${PASSWORD:=password}
 export VERSION=${VERSION:="3.11"}
@@ -256,4 +256,4 @@ echo "*"
 echo "$ oc login -u ${USERNAME} -p ${PASSWORD} https://$DOMAIN:$API_PORT/console"
 echo "******"
 
-oc login -u ${USERNAME} -p ${PASSWORD} https://console.$DOMAIN:$API_PORT/console
+oc login -u ${USERNAME} -p ${PASSWORD} https://$DOMAIN:$API_PORT/console
